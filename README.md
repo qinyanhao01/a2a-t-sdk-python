@@ -26,8 +26,6 @@ SPDX-License-Identifier: Apache-2.0
 
 <p align="center">
   <strong>Python SDK used to generate task prompts and handle task negotiation flows based on the A2A-T protocol.</strong>
-  <br>
-  基于A2A-T协议用于生成任务提示词并处理任务协商流程的Python SDK。
 </p>
 
 <p align="center">
