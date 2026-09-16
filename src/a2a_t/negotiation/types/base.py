@@ -1,7 +1,13 @@
 from __future__ import annotations
 
 from a2a_t.negotiation.common.enums import NegotiationStatus
-from a2a_t.negotiation.common.models import ContinueResult, NegotiationContext, NegotiationRecord, ReceiveResult, StartNegotiationInput
+from a2a_t.negotiation.common.models import (
+    ContinueResult,
+    NegotiationContext,
+    NegotiationRecord,
+    ReceiveResult,
+    StartNegotiationInput,
+)
 from a2a_t.negotiation.rendering.negotiation_prompt_renderer import NegotiationPromptRenderer
 
 
@@ -37,7 +43,7 @@ class BaseNegotiationType:
         *,
         record: NegotiationRecord,
         context: NegotiationContext,
-        status,
+        status: NegotiationStatus,
         content_text: str,
     ) -> ContinueResult:
         """Render the next outbound prompt using the default passthrough behavior."""

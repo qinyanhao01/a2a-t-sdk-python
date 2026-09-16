@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
 import unittest
-
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -16,11 +15,14 @@ if str(SRC_ROOT) not in sys.path:
 class SubscribeIncidentSlotSchemaConstraintsTest(unittest.TestCase):
     def test_subscribe_incident_slot_schema_keeps_optional_condition_and_has_mapping_hint(self) -> None:
         slot_json_path = (
-            PROJECT_ROOT
-            / "package_data"
+            SRC_ROOT
+            / "a2a_t"
             / "prompt_resources"
             / "slots"
-            / "subscribe_incident"
+            / "Notification-T"
+            / "network-layer"
+            / "subscribe-incident"
+            / "v1"
             / "zh-CN"
             / "slot.json"
         )

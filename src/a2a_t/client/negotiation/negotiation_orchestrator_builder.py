@@ -3,15 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from a2a_t.negotiation.common.enums import NegotiationType
 from a2a_t.negotiation.handling import NegotiationHandler
 from a2a_t.negotiation.rendering import NegotiationPromptRenderer
-from a2a_t.negotiation.common.enums import NegotiationType
 from a2a_t.negotiation.store import NegotiationStateStoreFactory
 from a2a_t.negotiation.types import (
-    ClarificationNegotiationType,
     FeasibilityNegotiationType,
-    FulfillmentNegotiationType,
     InformationNegotiationType,
+    TargetNegotiationType,
 )
 
 from .negotiation_orchestrator import NegotiationOrchestrator
@@ -45,13 +44,12 @@ class ClientNegotiationOrchestratorBuilder:
         handler = self._handler_cls(
             negotiation_types={
                 NegotiationType.INFORMATION: InformationNegotiationType(prompt_renderer=prompt_renderer),
-                NegotiationType.CLARIFICATION: ClarificationNegotiationType(prompt_renderer=prompt_renderer),
+                NegotiationType.TARGET: TargetNegotiationType(prompt_renderer=prompt_renderer),
                 NegotiationType.FEASIBILITY: FeasibilityNegotiationType(prompt_renderer=prompt_renderer),
-                NegotiationType.FULFILLMENT: FulfillmentNegotiationType(prompt_renderer=prompt_renderer),
             },
             store=store,
         )
-        return self._orchestrator_cls(
+        return self._orchestrator_cls(  # type: ignore[no-any-return]
             handler=handler,
             logger=logger,
         )

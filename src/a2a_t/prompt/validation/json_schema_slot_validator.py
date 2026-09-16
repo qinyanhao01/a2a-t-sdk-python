@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from jsonschema import Draft202012Validator
 
 from .constants import INVALID_VALUE, MISSING_INPUT
@@ -42,19 +44,19 @@ class JsonSchemaSlotValidator:
                 existing_slot_names.add(slot_name)
 
         for error in validator.iter_errors(normalized_slots):
-            slot_name = self._resolve_slot_name(error)
-            if slot_name is None or slot_name in existing_slot_names:
+            resolved_slot_name = self._resolve_slot_name(error)
+            if resolved_slot_name is None or resolved_slot_name in existing_slot_names:
                 continue
             normalized_errors.append(
                 self._build_slot_error(
-                    slot_name=slot_name,
+                    slot_name=resolved_slot_name,
                     validator_name=error.validator,
                     required_slots=required_slots,
                     instance=error.instance,
                     slot_json_schema=slot_json_schema,
                 )
             )
-            existing_slot_names.add(slot_name)
+            existing_slot_names.add(resolved_slot_name)
 
         return SlotValidationResult(
             passed=not normalized_errors,
@@ -100,7 +102,7 @@ class JsonSchemaSlotValidator:
         return value is None or (isinstance(value, str) and not value.strip())
 
     @staticmethod
-    def _resolve_slot_name(error) -> str | None:
+    def _resolve_slot_name(error: Any) -> str | None:
         if error.path:
             return str(next(iter(error.path)))
         return None

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from importlib import import_module
+from typing import Any
 
 __all__ = [
     "PromptComplianceConfig",
+    "PromptComplianceFailure",
     "PromptComplianceOrchestratorBuilder",
     "PromptComplianceOrchestrator",
     "PromptComplianceResult",
@@ -13,6 +15,7 @@ __all__ = [
 
 _EXPORTS: dict[str, tuple[str, str]] = {
     "PromptComplianceConfig": ("a2a_t.config.models", "PromptComplianceConfig"),
+    "PromptComplianceFailure": ("a2a_t.server.prompt_compliance.models", "PromptComplianceFailure"),
     "PromptComplianceOrchestratorBuilder": (
         "a2a_t.server.prompt_compliance.prompt_compliance_orchestrator_builder",
         "PromptComplianceOrchestratorBuilder",
@@ -25,7 +28,7 @@ _EXPORTS: dict[str, tuple[str, str]] = {
 }
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     try:
         module_name, attr_name = _EXPORTS[name]
     except KeyError as error:

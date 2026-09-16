@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from a2a_t.prompt.common.models import PromptReference
 from a2a_t.common.prompt_resources.models import ScenarioDefinition
+from a2a_t.prompt.common.models import PromptReference
 from a2a_t.prompt.validation.models import SlotValidationError
 
 

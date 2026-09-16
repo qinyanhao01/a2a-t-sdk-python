@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
 import unittest
-
+from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -11,8 +10,7 @@ SRC_ROOT = PROJECT_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-
-from a2a_t.prompt.validation.models import SlotValidationError, SlotValidationResult
+from a2a_t.prompt.validation.models import SlotValidationError, SlotValidationResult  # noqa: E402
 
 
 class JsonSchemaSlotValidatorTest(unittest.TestCase):
@@ -159,8 +157,12 @@ class JsonSchemaSlotValidatorTest(unittest.TestCase):
                     "site": {"type": "string", "minLength": 1},
                     "incident_level": {
                         "type": "string",
-                        "pattern": "^\\s*\\[(?:\\s*\"(?:critical|major)\"\\s*(?:,\\s*\"(?:critical|major)\"\\s*)*)\\]\\s*$",
-                        "x-a2at-value-constraint": "Must be a JSON array string containing one or more of: critical, major.",
+                        "pattern": (
+                            '^\\s*\\[(?:\\s*"(?:critical|major)"\\s*(?:,\\s*"(?:critical|major)"\\s*)*)\\]\\s*$'
+                        ),
+                        "x-a2at-value-constraint": (
+                            "Must be a JSON array string containing one or more of: critical, major."
+                        ),
                     },
                 },
                 "required": ["site"],

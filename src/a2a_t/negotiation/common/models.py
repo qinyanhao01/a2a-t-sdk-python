@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .errors import NegotiationContextError
 from .enums import NegotiationRole, NegotiationStatus, NegotiationType
+from .errors import NegotiationContextError
 
 
 @dataclass(slots=True)
@@ -41,10 +41,13 @@ class NegotiationContext:
         try:
             negotiation_type = NegotiationType(str(context["negotiationType"]))
             negotiation_id = str(context["negotiationId"])
-            role = NegotiationRole(str(context["role"]))
-            round_value = int(context["round"])
+            # role is optional: Java SDK context payload omits it; default to CLIENT.
+            raw_role = context.get("role", NegotiationRole.CLIENT.value)
+            role = NegotiationRole(str(raw_role))
+            round_value = int(str(context["round"]))
             status = NegotiationStatus(str(context["status"]))
-            extra = context["extra"]
+            # extra is optional: Java SDK defaults it to empty map.
+            extra = context.get("extra", {})
         except (KeyError, TypeError, ValueError) as error:
             raise NegotiationContextError("Invalid negotiation context.") from error
 

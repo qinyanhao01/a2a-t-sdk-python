@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from a2a_t.negotiation.common.enums import NegotiationStatus
 from a2a_t.negotiation.common.models import ContinueResult, NegotiationContext, NegotiationRecord, ReceiveResult
 
@@ -11,7 +13,7 @@ class InformationNegotiationType(BaseNegotiationType):
 
     _COMPLETE_MESSAGE = "Task prompt is complete."
 
-    def __init__(self, *, prompt_renderer, prompt_checker=None) -> None:
+    def __init__(self, *, prompt_renderer: Any, prompt_checker: Any | None = None) -> None:
         super().__init__(prompt_renderer=prompt_renderer)
         self._prompt_checker = prompt_checker
 
@@ -35,7 +37,7 @@ class InformationNegotiationType(BaseNegotiationType):
                 message=message,
                 context=context,
                 record=None,
-        )
+            )
 
         compliance_result = self._prompt_checker.check(
             processed_prompt_text=message,

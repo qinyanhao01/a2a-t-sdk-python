@@ -35,7 +35,7 @@ class LLMClientFactory:
         """Create an LLM client for a registered provider."""
         normalized_provider = cls._normalize_provider(provider)
         client_class = cls._resolve(normalized_provider)
-        return client_class(config, logger=logger)
+        return client_class(config, logger=logger)  # type: ignore[call-arg]
 
     @classmethod
     def available_providers(cls) -> list[str]:

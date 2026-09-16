@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib import import_module
+from typing import Any
 
 __all__ = [
     "PromptReference",
@@ -12,6 +13,8 @@ __all__ = [
     "parse_task_prompt_metadata",
     "TaskPromptRenderer",
     "TaskPromptRenderError",
+    "collapse_sections",
+    "drop_sections",
 ]
 
 _EXPORTS: dict[str, tuple[str, str]] = {
@@ -22,10 +25,12 @@ _EXPORTS: dict[str, tuple[str, str]] = {
     "parse_task_prompt_metadata": ("a2a_t.prompt.common.task_prompt_format", "parse_task_prompt_metadata"),
     "TaskPromptRenderer": ("a2a_t.prompt.task_rendering", "TaskPromptRenderer"),
     "TaskPromptRenderError": ("a2a_t.prompt.task_rendering.errors", "TaskPromptRenderError"),
+    "collapse_sections": ("a2a_t.prompt.task_rendering", "collapse_sections"),
+    "drop_sections": ("a2a_t.prompt.task_rendering", "drop_sections"),
 }
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     try:
         module_name, attr_name = _EXPORTS[name]
     except KeyError as error:

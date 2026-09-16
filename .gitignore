@@ -18,6 +18,22 @@ dist/
 build/
 .venv/
 venv/
+.ruff_cache/
+
+# MkDocs site output (D26: docs build with `mkdocs build --strict`)
+site/
+
+# Local env files (env.example is tracked as template)
+.env
+a2a-t-sample/.env
+
+# Live corpus transcripts (D24: .live-corpus/<run>/, never committed)
+.live-corpus/
+
+# Accuracy-verification corpus (a2a-t-corpus): secrets, run artifacts and work outputs
+a2a-t-corpus/.env
+a2a-t-corpus/.corpus/
+a2a-t-corpus/suites/*/resources/*/output_result_*.json
 
 # Claude 本地配置
 .claude/
@@ -26,7 +42,5 @@ venv/
 .codex_backup
 .uv-cache
 dist
-.obsidian
-
-# 环境变量（含密钥，不入库）
-.env
+.obsidian.tmp_tests/
+.tmp_tests/

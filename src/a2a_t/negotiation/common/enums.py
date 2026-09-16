@@ -7,9 +7,8 @@ class NegotiationType(str, Enum):
     """Enumerate the negotiation flows supported by the SDK."""
 
     INFORMATION = "information"
-    CLARIFICATION = "clarification"
+    TARGET = "target"
     FEASIBILITY = "feasibility"
-    FULFILLMENT = "fulfillment"
 
 
 class NegotiationRole(str, Enum):

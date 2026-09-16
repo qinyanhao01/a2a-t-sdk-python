@@ -3,11 +3,12 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from a2a_t.common.prompt_resources.models import ScenarioDefinition
+
 from .errors import ScenarioRecognitionError
 from .json_schema_builder import AnalysisJsonSchemaBuilder
 from .message_builder import AnalysisMessageBuilder
 from .models import ScenarioRecognitionResult
-from a2a_t.common.prompt_resources.models import ScenarioDefinition
 
 
 class ScenarioRecognizer:
@@ -54,7 +55,10 @@ class ScenarioRecognizer:
         try:
             payload = json.loads(content)
         except json.JSONDecodeError as error:
-            raise ScenarioRecognitionError("Scenario recognition returned invalid JSON.", raw_content=content) from error
+            raise ScenarioRecognitionError(
+                "Scenario recognition returned invalid JSON.",
+                raw_content=content,
+            ) from error
 
         if not isinstance(payload, dict):
             raise ScenarioRecognitionError("Scenario recognition must return a JSON object.", raw_content=content)

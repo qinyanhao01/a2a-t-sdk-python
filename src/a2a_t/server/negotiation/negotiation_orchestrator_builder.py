@@ -3,18 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from a2a_t.common.prompt_runtime import PromptRuntimeComponentsBuilder
 from a2a_t.config.models import A2ATConfig
+from a2a_t.negotiation.common.enums import NegotiationType
 from a2a_t.negotiation.handling import NegotiationHandler
 from a2a_t.negotiation.rendering import NegotiationPromptRenderer
-from a2a_t.negotiation.common.enums import NegotiationType
 from a2a_t.negotiation.store import NegotiationStateStoreFactory
 from a2a_t.negotiation.types import (
-    ClarificationNegotiationType,
     FeasibilityNegotiationType,
-    FulfillmentNegotiationType,
     InformationNegotiationType,
+    TargetNegotiationType,
 )
-from a2a_t.common.prompt_runtime import PromptRuntimeComponentsBuilder
 from a2a_t.server.prompt_compliance.prompt_compliance_orchestrator_builder import PromptComplianceOrchestratorBuilder
 
 from .negotiation_orchestrator import NegotiationOrchestrator
@@ -64,13 +63,12 @@ class ServerNegotiationOrchestratorBuilder:
                     prompt_renderer=prompt_renderer,
                     prompt_checker=prompt_checker,
                 ),
-                NegotiationType.CLARIFICATION: ClarificationNegotiationType(prompt_renderer=prompt_renderer),
+                NegotiationType.TARGET: TargetNegotiationType(prompt_renderer=prompt_renderer),
                 NegotiationType.FEASIBILITY: FeasibilityNegotiationType(prompt_renderer=prompt_renderer),
-                NegotiationType.FULFILLMENT: FulfillmentNegotiationType(prompt_renderer=prompt_renderer),
             },
             store=store,
         )
-        return self._orchestrator_cls(
+        return self._orchestrator_cls(  # type: ignore[no-any-return]
             handler=handler,
             logger=logger,
         )

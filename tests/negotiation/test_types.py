@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import importlib
 import sys
-from pathlib import Path
 import unittest
+from pathlib import Path
 
+import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = PROJECT_ROOT / "src"
@@ -24,15 +26,15 @@ class FakePromptChecker:
 
 class NegotiationTypesTest(unittest.TestCase):
     def _prompt_compliance_result(self):
-        from a2a_t.server.prompt_compliance.models import PromptComplianceResult
+        from a2a_t.server.prompt_compliance.models import PromptComplianceFailure, PromptComplianceResult
 
         return PromptComplianceResult(
             success=False,
-            failure={
-                "code": "slot_validation_error",
-                "message": "Need more information",
-                "stage": "slot_validation",
-            },
+            failure=PromptComplianceFailure(
+                code="slot.rule_violation",
+                message="Need more information",
+                stage="slot_validation",
+            ),
         )
 
     def _context(self):
@@ -68,9 +70,7 @@ class NegotiationTypesTest(unittest.TestCase):
         from a2a_t.negotiation.rendering.negotiation_prompt_renderer import NegotiationPromptRenderer
         from a2a_t.negotiation.types.information import InformationNegotiationType
 
-        checker = FakePromptChecker(
-            self._prompt_compliance_result()
-        )
+        checker = FakePromptChecker(self._prompt_compliance_result())
         negotiation_type = InformationNegotiationType(
             prompt_renderer=NegotiationPromptRenderer(),
             prompt_checker=checker,
@@ -115,16 +115,16 @@ class NegotiationTypesTest(unittest.TestCase):
     def test_information_type_on_server_side_returns_error_when_prompt_fails_without_negotiation(self) -> None:
         from a2a_t.negotiation.rendering.negotiation_prompt_renderer import NegotiationPromptRenderer
         from a2a_t.negotiation.types.information import InformationNegotiationType
-        from a2a_t.server.prompt_compliance.models import PromptComplianceResult
+        from a2a_t.server.prompt_compliance.models import PromptComplianceFailure, PromptComplianceResult
 
         checker = FakePromptChecker(
             PromptComplianceResult(
                 success=False,
-                failure={
-                    "code": "processed_prompt_parse_error",
-                    "message": "Task prompt metadata is invalid.",
-                    "stage": "prompt_parse",
-                },
+                failure=PromptComplianceFailure(
+                    code="scenario.not_matched",
+                    message="Task prompt metadata is invalid.",
+                    stage="prompt_parse",
+                ),
             )
         )
         negotiation_type = InformationNegotiationType(
@@ -167,17 +167,17 @@ class NegotiationTypesTest(unittest.TestCase):
         self.assertEqual(result.final_task_prompt, "final prompt")
         self.assertEqual(result.prompt_text, "final prompt")
 
-    def test_clarification_type_passthroughs_facts(self) -> None:
+    def test_target_type_passthroughs_facts(self) -> None:
         from a2a_t.negotiation.common.enums import NegotiationRole, NegotiationStatus, NegotiationType
         from a2a_t.negotiation.common.models import NegotiationContext
         from a2a_t.negotiation.rendering.negotiation_prompt_renderer import NegotiationPromptRenderer
-        from a2a_t.negotiation.types.clarification import ClarificationNegotiationType
+        from a2a_t.negotiation.types.target import TargetNegotiationType
 
-        negotiation_type = ClarificationNegotiationType(prompt_renderer=NegotiationPromptRenderer())
+        negotiation_type = TargetNegotiationType(prompt_renderer=NegotiationPromptRenderer())
         result = negotiation_type.process_received_message(
             message="clarify this",
             context=NegotiationContext(
-                negotiation_type=NegotiationType.CLARIFICATION,
+                negotiation_type=NegotiationType.TARGET,
                 negotiation_id="neg-2",
                 role=NegotiationRole.CLIENT,
                 round=1,
@@ -190,17 +190,17 @@ class NegotiationTypesTest(unittest.TestCase):
         self.assertEqual(result.facts, {})
         self.assertEqual(result.message, "clarify this")
 
-    def test_clarification_type_on_terminal_message_does_not_require_response(self) -> None:
+    def test_target_type_on_terminal_message_does_not_require_response(self) -> None:
         from a2a_t.negotiation.common.enums import NegotiationRole, NegotiationStatus, NegotiationType
         from a2a_t.negotiation.common.models import NegotiationContext
         from a2a_t.negotiation.rendering.negotiation_prompt_renderer import NegotiationPromptRenderer
-        from a2a_t.negotiation.types.clarification import ClarificationNegotiationType
+        from a2a_t.negotiation.types.target import TargetNegotiationType
 
-        negotiation_type = ClarificationNegotiationType(prompt_renderer=NegotiationPromptRenderer())
+        negotiation_type = TargetNegotiationType(prompt_renderer=NegotiationPromptRenderer())
         result = negotiation_type.process_received_message(
             message="clarify this",
             context=NegotiationContext(
-                negotiation_type=NegotiationType.CLARIFICATION,
+                negotiation_type=NegotiationType.TARGET,
                 negotiation_id="neg-3",
                 role=NegotiationRole.CLIENT,
                 round=2,
@@ -213,3 +213,26 @@ class NegotiationTypesTest(unittest.TestCase):
         self.assertFalse(result.need_response)
         self.assertEqual(result.facts, {})
         self.assertEqual(result.message, "clarify this")
+
+
+# --------------------------------------------------------------------------------------
+# Deprecation shim round (D1): the retired state-machine packages this suite pins emit a
+# DeprecationWarning when imported and will be removed in the next release. The behavioral
+# assertions above stay untouched; this only pins the warning contract of the deprecated
+# entry points this file exercises (types + their common/rendering dependencies).
+# --------------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "package_name",
+    (
+        "a2a_t.negotiation.types",
+        "a2a_t.negotiation.common",
+        "a2a_t.negotiation.rendering",
+    ),
+)
+def test_importing_a_deprecated_negotiation_package_warns(package_name: str) -> None:
+    module = importlib.import_module(package_name)
+
+    with pytest.warns(DeprecationWarning, match=f"{package_name} package is deprecated since 1\\.1\\.0"):
+        importlib.reload(module)

@@ -8,8 +8,9 @@ telecom operator environments, including prompt management and LLM integration.
 from __future__ import annotations
 
 from importlib import import_module
+from typing import Any
 
-__version__ = "0.1.9"
+__version__ = "1.0.0"
 
 __all__ = [
     "__version__",
@@ -31,7 +32,7 @@ _LAZY_IMPORTS = {
 }
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     module_name = _LAZY_IMPORTS.get(name)
     if module_name is None:
         raise AttributeError(f"module 'a2a_t' has no attribute {name!r}")
